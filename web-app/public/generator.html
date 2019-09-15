@@ -1,0 +1,41 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Building Mapper</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+</head>
+
+<body>
+    <div id="menuColumn">
+        <div id="fileSubmit">
+            <input type="file" id="file_input" accept="image/*" />
+            <button type="button" id="show_nodes">CONSOLE PRINT JSON NODES</button>
+        </div>
+        <div id="nodeInfo">
+            <p><bold>ID: </bold></p>
+            <p id='node_id'></p>
+            <P><bold>LATITUDE: </bold></P>
+            <p id='node_lat'></p>
+            <p><bold>LONGITUDE: </bold></p>
+            <p id='node_lon'></p>
+            <P><bold>FLOOR: </bold></P>
+            <p id='node_floor'></p>
+            <p><bold>ADJACENT:</bold></p>
+            <p id='node_adj'></p>
+            <P><bold>PARENT NODE: </bold></P>
+            <p id="node_parent"></p>
+            <button type="button" id="delete_node_button">DELETE ALL NODES</button>
+            
+        </div>
+    </div>
+    <div id="map"></div>
+
+    <script src="scripts.js"></script>
+</body>
+
+</html>
