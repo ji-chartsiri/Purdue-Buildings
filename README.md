@@ -1,9 +1,13 @@
 # Purdue-Buildings
 Purdue Hello World Hackathon Project
+![alt text](web-app/public/img/icon.png "Purdue Buildings Logo")
 
-maps but for buildings
+Provides navigation inside buildings using pathfinding
 
-RIGHT CLICK to place new nodes
-LEFT CLICK to select node to branch from
+## Map Data Generator
+
+**RIGHT CLICK** to place new nodes
+
+**LEFT CLICK** to select node to branch from
 
 
