@@ -1,20 +1,15 @@
 /*
 TODO
 fix map start pos and drag issues
-current node marker
 change image scale slider/resolution selector
 
 error message/page if js not loaded
 
-select mode
-    changes current node
-    edit data
-    delete node
+edit data
+delete node
 
-draw mode
-    drag nodes -change pos
-    snap nodes to form loops?
-    ctrl-z
+snap nodes to form loops?
+ctrl-z
 
 */
 
@@ -39,6 +34,7 @@ var currentNode = null;
 var currentCircle;
 
 //Map layers
+var map;
 var circlesLayer;
 var linesLayer;
 
@@ -66,7 +62,7 @@ function loadMap(file) {
     // var southWest = L.latLng(0, 750);
     // var northEast = L.latLng(750, 0);
     var bounds = L.latLngBounds(0, 0);
-    var map = L.map('map', {
+    map = L.map('map', {
         maxBounds: bounds,
         maxZoom: 5,
         minZoom: -1,
@@ -86,28 +82,25 @@ function loadMap(file) {
     map.on('contextmenu',
         function (e) {
             console.log("map click");
-            var coord = e.latlng.toString().split(',');
-            var lat = coord[0].split('(');
-            var lng = coord[1].split(')');
 
+            var coord = convertLatLng(e);
 
             if (currentNode != null) {
                 var coords = [
                     [currentNode.lat, currentNode.lon],
-                    [lat[1], lng[0]]
+                    [coord[0], coord[1]]
                 ]
 
-                var lines = L.polyline(coords, { color: mapColors.LINE }).addTo(linesLayer);
+                var line = L.polyline(coords, { color: mapColors.LINE }).addTo(linesLayer);
+                currentNode.startLine = line;
             }
             var circleOptions = {
                 color: mapColors.CURRENT_CIRCLE,
                 fillColor: 'f03',
                 fillOpacity: 0,
-                bubblingMouseEvents: false
+                bubblingMouseEvents: false,
+
             }
-
-
-
 
             //Reset color of previous node
             if (currentCircle != null) {
@@ -115,8 +108,16 @@ function loadMap(file) {
             }
 
             //Update current circle/node reference
+
             currentCircle = L.circle(e.latlng, 2, circleOptions).addTo(circlesLayer);
-            currentNode = createChildNode(lat[1], lng[0]);
+
+            //If previous node exists, draw line, else defaults to null
+            if(currentNode!=null){
+                currentNode = createChildNode(coord[0], coord[1], null, null, null, line);
+            }else{
+                currentNode = createChildNode(coord[0], coord[1]);
+            }
+
 
             nodesMap.set(currentCircle, currentNode);
 
@@ -128,53 +129,99 @@ function loadMap(file) {
 
 }
 
+function convertLatLng(e){
+    var coordArray = e.latlng.toString().split(',');
+    var lat = coordArray[0].split('(')[1];
+    var lng = coordArray[1].split(')')[0];
+    return [lat,lng];
+}
+
 function setUpCircleListeners() {
-    circlesLayer.on("click", function (event) {
-        var selection = event.layer;
+    circlesLayer.on({
+        //Handle node selection highlighting
+        mouseover:function (event) {
+            var selection = event.layer;
+            selection.setStyle({ color: mapColors.HOVER_CIRCLE });
+        },
+        mouseout:function (event) {
+            var selection = event.layer;
+            let nodeColor = selection == currentCircle ? mapColors.CURRENT_CIRCLE : mapColors.CIRCLE;
+            selection.setStyle({ color: nodeColor })
+        },
 
-        if (currentCircle != null) {
-            currentCircle.setStyle({ color: mapColors.CIRCLE });
-        }
+        //Handle node selection
+        click:function (event) {
+            var selection = event.layer;
+    
+            if (currentCircle != null) {
+                currentCircle.setStyle({ color: mapColors.CIRCLE });
+            }
+            currentCircle = selection;
+            currentNode = nodesMap.get(currentCircle);
+            updateNodeInfoColumn(currentNode);
+            //console.log(selection);
+        },
 
-        currentCircle = selection;
-        currentNode = nodesMap.get(currentCircle);
+        //Handle node dragging
+        mousedown: function (event) {
+            var selection = event.layer;
+            map.on("mousemove", function (e) {
+                selection.setLatLng(e.latlng);
 
-        console.log(selection);
-    });
+                node = nodesMap.get(selection);
+                let coord = convertLatLng(e);
+                node.lat = coord[0];
+                node.lon = coord[1];
+            });
+            map.dragging.disable();
+        },
 
-    circlesLayer.on("mouseover", function (event) {
-        var selection = event.layer;
-        selection.setStyle({ color: mapColors.HOVER_CIRCLE });
-    });
+        ///TODOD ODSFI AFASDF
+        mouseup: function(event){
+            console.log("mouseup");
+            map.removeEventListener("mousemove");
+            map.dragging.enable();
 
-    circlesLayer.on("mouseout", function (event) {
-        var selection = event.layer;
-        let nodeColor = selection == currentCircle ? mapColors.CURRENT_CIRCLE : mapColors.CIRCLE;
-        selection.setStyle({ color: nodeColor })
+            //Redraw lines
+            var selection = event.layer;
+            var node = nodesMap.get(selection);
+
+            if(node.startLine!=null){
+                var coordsArray = node.startLine.getLatLngs();
+                var startCoords = L.latLng(node.lat, node.lon);
+                var endCoords = coordsArray[1];
+
+                node.startLine.setLatLngs([startCoords, endCoords]);
+            }
+            if(node.endLine!=null){
+                var coordsArray = node.endLine.getLatLngs();
+                var startCoords = coordsArray[0];
+                var endCoords = L.latLng(node.lat, node.lon);
+
+                node.endLine.setLatLngs([startCoords, endCoords]);
+            }
+        },
     });
 }
 
 function deleteEverything() {
-
+    //TODO
 }
 
 
 
-function createChildNode(lat, lon, floor, adj, id) {
-
+function createChildNode(lat, lon, floor, adj, id, endLine) {
     if (floor == null) {
         floor = 0;
     }
     if (id == null) {
         id = "test" + lat.toString() + lon.toString();
     }
-
-    var newNode = new Node(lat, lon, currentNode, floor, [], id);
+    var newNode = new Node(lat, lon, currentNode, floor, [], id, null, endLine);
 
     if (currentNode != null) {
         currentNode.adj.push(newNode);
     }
-
     return newNode;
 }
 
@@ -192,13 +239,15 @@ function handleShowNodes() {
 }
 
 class Node {
-    constructor(lat, lon, parentNode, floor, adj, id) {
+    constructor(lat, lon, parentNode, floor, adj, id, startLine, endLine) {
         this.lat = lat;
         this.lon = lon;
         this.parentNode = parentNode;
         this.floor = floor;
         this.adj = adj;
         this.id = id;
+        this.startLine = startLine;
+        this.endLine = endLine;
     }
 
     toString() {
