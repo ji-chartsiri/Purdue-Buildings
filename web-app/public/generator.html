@@ -16,18 +16,27 @@
             <button type="button" id="show_nodes">CONSOLE PRINT JSON NODES</button>
         </div>
         <div id="nodeInfo">
+            Current Node
             <p><bold>ID: </bold></p>
-            <p id='node_id'></p>
+            <input type="text" id='node_id'>
+
             <P><bold>LATITUDE: </bold></P>
-            <p id='node_lat'></p>
+            <input type="text" id='node_lat'>
+
             <p><bold>LONGITUDE: </bold></p>
-            <p id='node_lon'></p>
-            <P><bold>FLOOR: </bold></P>
-            <p id='node_floor'></p>
+            <input type="text" id='node_lon'>
+
+            <p><bold>FLOOR: </bold></p>
+            <input type="text" id='node_floor'>
+
             <p><bold>ADJACENT:</bold></p>
             <p id='node_adj'></p>
+
             <P><bold>PARENT NODE: </bold></P>
             <p id="node_parent"></p>
+
+            <input type="button" value="Update" onclick="updateNodeInfo()">
+
             <button type="button" id="delete_node_button">DELETE ALL NODES</button>
             
         </div>

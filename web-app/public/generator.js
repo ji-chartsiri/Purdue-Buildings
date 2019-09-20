@@ -3,14 +3,9 @@ TODO
 fix map start pos and drag issues
 change image scale slider/resolution selector
 
-error message/page if js not loaded
-
-edit data
 delete node
 
-snap nodes to form loops?
-ctrl-z
-
+adding parentNodes with visual ui
 */
 
 
@@ -92,12 +87,13 @@ function loadMap(file) {
                 ]
 
                 var line = L.polyline(coords, { color: mapColors.LINE }).addTo(linesLayer);
-                currentNode.startLine = line;
+                currentNode.startLine.push(line);
             }
             var circleOptions = {
                 color: mapColors.CURRENT_CIRCLE,
                 fillColor: 'f03',
-                fillOpacity: 0,
+                fillOpacity: 1,
+                //opacity:0,
                 bubblingMouseEvents: false,
 
             }
@@ -146,25 +142,21 @@ function setUpCircleListeners() {
         mouseout:function (event) {
             var selection = event.layer;
             let nodeColor = selection == currentCircle ? mapColors.CURRENT_CIRCLE : mapColors.CIRCLE;
-            selection.setStyle({ color: nodeColor })
+            selection.setStyle({ color: nodeColor });
         },
-
-        //Handle node selection
-        click:function (event) {
+        
+        mousedown: function (event) {
             var selection = event.layer;
-    
+
+            //Handles node selection
             if (currentCircle != null) {
                 currentCircle.setStyle({ color: mapColors.CIRCLE });
             }
             currentCircle = selection;
             currentNode = nodesMap.get(currentCircle);
             updateNodeInfoColumn(currentNode);
-            //console.log(selection);
-        },
 
-        //Handle node dragging
-        mousedown: function (event) {
-            var selection = event.layer;
+            //Handle node dragging
             map.on("mousemove", function (e) {
                 selection.setLatLng(e.latlng);
 
@@ -176,9 +168,7 @@ function setUpCircleListeners() {
             map.dragging.disable();
         },
 
-        ///TODOD ODSFI AFASDF
         mouseup: function(event){
-            console.log("mouseup");
             map.removeEventListener("mousemove");
             map.dragging.enable();
 
@@ -186,19 +176,26 @@ function setUpCircleListeners() {
             var selection = event.layer;
             var node = nodesMap.get(selection);
 
-            if(node.startLine!=null){
-                var coordsArray = node.startLine.getLatLngs();
-                var startCoords = L.latLng(node.lat, node.lon);
-                var endCoords = coordsArray[1];
-
-                node.startLine.setLatLngs([startCoords, endCoords]);
+            if(node.startLine.length>0){
+                node.startLine.forEach(
+                    function(line){
+                        var coordsArray = line.getLatLngs();
+                        var startCoords = L.latLng(node.lat, node.lon);
+                        var endCoords = coordsArray[1];
+                        line.setLatLngs([startCoords, endCoords]);
+                    }
+                );
             }
-            if(node.endLine!=null){
-                var coordsArray = node.endLine.getLatLngs();
-                var startCoords = coordsArray[0];
-                var endCoords = L.latLng(node.lat, node.lon);
-
-                node.endLine.setLatLngs([startCoords, endCoords]);
+            if(node.endLine.length>0){
+                node.endLine.forEach(
+                    function(line){
+                        var coordsArray = line.getLatLngs();
+                        var startCoords = coordsArray[0];
+                        var endCoords = L.latLng(node.lat, node.lon);
+        
+                        line.setLatLngs([startCoords, endCoords]); 
+                    }
+                );
             }
         },
     });
@@ -217,21 +214,41 @@ function createChildNode(lat, lon, floor, adj, id, endLine) {
     if (id == null) {
         id = "test" + lat.toString() + lon.toString();
     }
-    var newNode = new Node(lat, lon, currentNode, floor, [], id, null, endLine);
+    var newNode = new Node(lat, lon, [], floor, [], id, [], []);
 
-    if (currentNode != null) {
+    if(endLine!=null){
+        newNode.endLine.push(endLine)
+    }
+
+    if (currentNode!=null) {
+        newNode.parentNodes.push(currentNode);
         currentNode.adj.push(newNode);
     }
     return newNode;
 }
 
+function updateNodeInfo(){
+    let oldId = currentNode.id;
+    currentNode.id = node_id.value;
+    currentNode.lat = node_lat.value;
+    currentNode.lon = node_lon.value;
+    currentNode.floor = node_floor.value;
+
+    currentNode.parentNodes.forEach(
+        function(parentNode){
+            let index = parentNode.adj.indexOf(oldId);
+            parentNode.adj[index] = currentNode.id;
+        }
+    );
+}
+
 function updateNodeInfoColumn(node) {
-    node_id.innerHTML = node.id;
-    node_lat.innerHTML = node.lat;
-    node_lon.innerHTML = node.lon;
-    node_floor.innerHTML = node.floor;
+    node_id.value = node.id;
+    node_lat.value = node.lat;
+    node_lon.value = node.lon;
+    node_floor.value = node.floor;
     node_adj.innerHTML = node.adj;
-    node_parent.innerHTML = node.parentNode;
+    node_parent.innerHTML = node.parentNodes;
 }
 
 function handleShowNodes() {
@@ -239,10 +256,10 @@ function handleShowNodes() {
 }
 
 class Node {
-    constructor(lat, lon, parentNode, floor, adj, id, startLine, endLine) {
+    constructor(lat, lon, parentNodes, floor, adj, id, startLine, endLine) {
         this.lat = lat;
         this.lon = lon;
-        this.parentNode = parentNode;
+        this.parentNodes = parentNodes;
         this.floor = floor;
         this.adj = adj;
         this.id = id;

@@ -15,4 +15,6 @@ Input start and ending room number at bottom to find shortest path
 
 **LEFT CLICK** to select node to branch from
 
+**HOLD LEFT CLICK** to drag node to new position
+
 
