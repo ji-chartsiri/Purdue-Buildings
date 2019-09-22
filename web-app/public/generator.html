@@ -11,33 +11,36 @@
 
 <body>
     <div id="menuColumn">
-        <div id="fileSubmit">
+        <div id="dataIo">
+            <label for="file_input" id="custom_file_input">
+                Upload Map
+            </label>
             <input type="file" id="file_input" accept="image/*" />
-            <button type="button" id="show_nodes">CONSOLE PRINT JSON NODES</button>
+            <button type="button" id="show_nodes">Export Map</button>
         </div>
         <div id="nodeInfo">
-            Current Node
-            <p><bold>ID: </bold></p>
+            <h2>Current Node</h2>
+            <h3>ID: </h3>
             <input type="text" id='node_id'>
 
-            <P><bold>LATITUDE: </bold></P>
+            <h3>LATITUDE: </h3>
             <input type="text" id='node_lat'>
 
-            <p><bold>LONGITUDE: </bold></p>
+            <h3>LONGITUDE: </h3>
             <input type="text" id='node_lon'>
 
-            <p><bold>FLOOR: </bold></p>
+            <h3>FLOOR: </h3>
             <input type="text" id='node_floor'>
 
-            <p><bold>ADJACENT:</bold></p>
-            <p id='node_adj'></p>
+            <h3>ADJACENT: </h3>
+            <h3 id='node_adj'></h3>
 
-            <P><bold>PARENT NODE: </bold></P>
-            <p id="node_parent"></p>
+            <h3>PARENT NODE: </h3>
+            <h3 id="node_parent"></h3>
 
-            <input type="button" value="Update" onclick="updateNodeInfo()">
+            <button type="button" onclick="updateNodeInfo()">Update Info</button>
 
-            <button type="button" id="delete_node_button">DELETE ALL NODES</button>
+            <button type="button" id="delete_node_button" onclick="deleteNodeAndChildren()">Delete Node & Children</button>
             
         </div>
     </div>

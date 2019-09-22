@@ -1,7 +1,7 @@
 /*
 TODO
-delete node
 adding parentNodes with visual ui
+write tree to file
 */
 
 /*
@@ -60,7 +60,7 @@ const CIRCLE_OPTIONS = {
 //TODO put this in HTML file
 fileInput.addEventListener('change', handleFileChange);
 document.getElementById("show_nodes").addEventListener("click", handleShowNodes)
-document.getElementById("delete_node_button").addEventListener("click", deleteEverything());
+// document.getElementById("delete_node_button").addEventListener("click", deleteEverything());
 
 function handleFileChange() {
     const file = this.files[0];
@@ -112,8 +112,6 @@ function loadMap(file) {
 
             //Create connection to previous node if exists
             if (currentNode != null) {
-
-
                 var coords = [
                     L.latLng(currentNode.lat, currentNode.lon, 0),
                     L.latLng(coord[0], coord[1], 1)
@@ -121,13 +119,6 @@ function loadMap(file) {
                 //Hotline uses z-value in latLng to create gradient using palette
                 var line = L.hotline(coords, { palette: {0.0:MAP_COLORS.LINE_START,1.0:MAP_COLORS.LINE_END}, weight: 2 }).addTo(linesLayer);
                 
-                
-                // var coords = [
-                //     [currentNode.lat, currentNode.lon],
-                //     [coord[0], coord[1]]
-                // ]
-                // var line = L.polyline(coords, { color: MAP_COLORS.LINE, weight: 1 }).addTo(linesLayer);
-
                 currentNode.startLine.push(line);
             }
 
@@ -137,7 +128,6 @@ function loadMap(file) {
             }
 
             //Update current circle/node reference
-
             currentCircle = L.circle(e.latlng, 2, CIRCLE_OPTIONS).addTo(circlesLayer);
 
             //If previous node exists, draw line, else defaults to null
@@ -230,16 +220,48 @@ function setUpCircleListeners() {
         },
     });
 }
+//TODO - HOW DOES THIS WORK WITH LOOPS???????????????????????????????
+function deleteNodeAndChildren() {
+    //Removes node from parent's adj array
+    currentNode.parentNodes.forEach(function(parent){
+        for(let i =0; i<parent.adj.length; i++){
+            if(parent.adj[i] == currentNode){
+                parent.adj.splice(i, 1);
+                break;
+            }
+        }
+    });
 
-function deleteEverything() {
-    //TODO
+    deleteNode(currentNode);
+
+    //Selects parent node - defaults to first
+    if(currentNode.parentNodes.length>0){
+        currentNode = currentNode.parentNodes[0];
+        currentCircle = currentNode.circle;
+        currentCircle.setStyle({fillColor:MAP_COLORS.CURRENT_CIRCLE, color:MAP_COLORS.CURRENT_CIRCLE});
+    }else{
+        currentCircle=null;
+        currentNode=null;
+    }
+}
+//Recursively deletes node and all children
+function deleteNode(node){
+    nodesMap.delete(node.circle);
+    circlesLayer.removeLayer(node.circle);
+    node.endLine.forEach(function(line){
+        linesLayer.removeLayer(line);
+    });
+    node.adj.forEach(function(child){
+        deleteNode(child);
+    })
 }
 
-
-//TODO
+//TODO make not ugly
 function createChildNode(lat, lon, floor, adj, id, endLine) {
-    if (floor == null) {
+    if (currentNode == null) {
         floor = 0;
+    }else{
+        floor = currentNode.floor;
     }
     if (id == null) {
         id = "test" + lat.toString() + lon.toString();
@@ -318,6 +340,7 @@ class Node {
         this.id = id;
         this.startLine = startLine;
         this.endLine = endLine;
+        this.circle = currentCircle;
     }
 
     toString() {

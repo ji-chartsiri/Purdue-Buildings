@@ -1,6 +1,7 @@
 body{
     display: flex;
     flex-direction: row;
+    font-family: Verdana, Geneva, Tahoma, sans-serif
 }
 
 #menuColumn{
@@ -10,4 +11,81 @@ body{
 #map {
     height: 95vh;
     flex-grow: 1;
+}
+
+button{
+    font-family: inherit;
+    width:100%;
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 12px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    border-radius: 2px;
+
+    -webkit-transition-duration: 0.2s; /* Safari */
+    transition-duration: 0.2s;
+}
+button:hover{
+    background-color:#65c968;
+}
+
+#delete_node_button
+{   
+    margin-top: 10%;
+    margin-bottom: 10%;
+    background-color: white; 
+    color: black; 
+    border: 2px solid #f44336;
+}
+
+#delete_node_button:hover{
+    background-color: #f44336;
+    color: white;
+}
+
+input[type="file"]{
+    display: none;
+}
+
+input[type="text"]{
+    margin: 0;
+    width:95%;
+}
+
+#custom_file_input{
+    width:100%;
+    margin:0%;
+    border: 1px solid #ccc;
+    display: inline-block;
+    text-align: center;
+    background-color: #008CBA;
+    color: white;
+    border-radius: 4px;
+    font-size: 14px;
+    padding: 12px 0px;
+}
+#custom_file_input:hover{
+    background-color: #2caad4;
+}
+
+#show_nodes{
+    margin: 8px 0%;
+}
+
+#nodeInfo{
+    /*outline: 1px solid #000000;*/
+    background-color: #e8e8e8;
+    border-radius: 4px;
+    padding: 4px;
+}
+
+h2{
+    margin-top: 0;
+}
+h3{
+    margin-bottom: 0;
 }
