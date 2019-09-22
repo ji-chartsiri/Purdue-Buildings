@@ -1,12 +1,6 @@
 /*
 TODO
-fix map start pos and drag issues
-change image scale slider/resolution selector
-
 delete node
-
-extract styling, colors etc
-
 adding parentNodes with visual ui
 */
 
@@ -36,28 +30,30 @@ var node_parent = document.getElementById("node_parent");
 var nodesMap = new Map();
 
 //Global references
+var map;
 var currentNode = null;
 var currentCircle;
 
 //Map layers
-var map;
 var circlesLayer;
 var linesLayer;
 
 //Map layer colors
 const MAP_COLORS = {
-    CIRCLE: 'red',
-    LINE: 'red',
-    CURRENT_CIRCLE: 'blue',
-    HOVER_CIRCLE: 'green'
+    CIRCLE: 'orange',
+    // LINE: 'orange',
+    CURRENT_CIRCLE: 'red',
+    HOVER_CIRCLE: 'yellow',
+    LINE_START:'navy',
+    LINE_END:'cyan',
 }
 
 //Styling for circles (nodes)
 const CIRCLE_OPTIONS = {
-    color: MAP_COLORS.CURRENT_CIRCLE,
-    fillColor: 'f03',
-    fillOpacity: 1,
+    //color: 'black',
     //opacity:0,
+    fillColor: MAP_COLORS.CURRENT_CIRCLE,
+    fillOpacity: 1,
     bubblingMouseEvents: false,
 }
 
@@ -116,18 +112,28 @@ function loadMap(file) {
 
             //Create connection to previous node if exists
             if (currentNode != null) {
-                var coords = [
-                    [currentNode.lat, currentNode.lon],
-                    [coord[0], coord[1]]
-                ]
 
-                var line = L.polyline(coords, { color: MAP_COLORS.LINE, weight: 1 }).addTo(linesLayer);
+
+                var coords = [
+                    L.latLng(currentNode.lat, currentNode.lon, 0),
+                    L.latLng(coord[0], coord[1], 1)
+                ]
+                //Hotline uses z-value in latLng to create gradient using palette
+                var line = L.hotline(coords, { palette: {0.0:MAP_COLORS.LINE_START,1.0:MAP_COLORS.LINE_END}, weight: 2 }).addTo(linesLayer);
+                
+                
+                // var coords = [
+                //     [currentNode.lat, currentNode.lon],
+                //     [coord[0], coord[1]]
+                // ]
+                // var line = L.polyline(coords, { color: MAP_COLORS.LINE, weight: 1 }).addTo(linesLayer);
+
                 currentNode.startLine.push(line);
             }
 
             //Reset color of previous node
             if (currentCircle != null) {
-                currentCircle.setStyle({ color: MAP_COLORS.CIRCLE });
+                currentCircle.setStyle({ color: MAP_COLORS.CIRCLE, fillColor:MAP_COLORS.CIRCLE});
             }
 
             //Update current circle/node reference
@@ -169,10 +175,12 @@ function setUpCircleListeners() {
 
         mousedown: function (event) {
             var selection = event.layer;
+            
+            selection.setStyle({fillColor:MAP_COLORS.CURRENT_CIRCLE});
 
             //Handles node selection
             if (currentCircle != null) {
-                currentCircle.setStyle({ color: MAP_COLORS.CIRCLE });
+                currentCircle.setStyle({ color: MAP_COLORS.CIRCLE, fillColor: MAP_COLORS.CIRCLE });
             }
             currentCircle = selection;
             currentNode = nodesMap.get(currentCircle);
@@ -202,7 +210,7 @@ function setUpCircleListeners() {
                 node.startLine.forEach(
                     function (line) {
                         var coordsArray = line.getLatLngs();
-                        var startCoords = L.latLng(node.lat, node.lon);
+                        var startCoords = L.latLng(node.lat, node.lon,0);
                         var endCoords = coordsArray[1];
                         line.setLatLngs([startCoords, endCoords]);
                     }
@@ -213,7 +221,7 @@ function setUpCircleListeners() {
                     function (line) {
                         var coordsArray = line.getLatLngs();
                         var startCoords = coordsArray[0];
-                        var endCoords = L.latLng(node.lat, node.lon);
+                        var endCoords = L.latLng(node.lat, node.lon, 1);
 
                         line.setLatLngs([startCoords, endCoords]);
                     }
