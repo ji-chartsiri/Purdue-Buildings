@@ -14,7 +14,7 @@ Input start and ending room number at bottom to find shortest path
 ![Sample Mapper View](images/mapper_sample_view.png)
 
 ### Basic Instructions
-![Input Output Buttons](images/io_buttons.png)
+<img align="right" src="images/io_buttons.png">
 **UPLOAD** an image file (png, jpg, etc.) to start
 **CLICK EXPORT** to prompt a download for a JSON file containing the mapped nodes
 
@@ -41,7 +41,9 @@ Click through all of a node's children (and their children's children... etc) th
 Here are some visual features to help users understand maps at a glance.
 
 ![Connection Gradient](images/connection_gradient.png)
+
 Connections between nodes are a gradient. Parent side is darker.
 
 ![Select child through sidebar](images/select_child.png)
+
 Select a node's parents/children directly through the side bar
