@@ -20,9 +20,10 @@ Input start and ending room number at bottom to find shortest path
 
 **CLICK EXPORT** to prompt a download for a JSON file containing the mapped nodes
 
+<img align="right" src="images/textbox_edit.png" alt="Edit Node Info Group" width="250" height="260">
+
 **RIGHT CLICK** to place new nodes
 
-<img align="right" src="images/textbox_edit.png" alt="Edit Node Info Group" width="250" height="260">
 
 **LEFT CLICK** to select node to branch from
 
