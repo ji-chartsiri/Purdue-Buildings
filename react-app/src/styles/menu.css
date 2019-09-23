@@ -1,0 +1,131 @@
+#menu {
+  position: absolute;
+  left: 0px;
+  width: 20vw;
+  height: 100vh;
+  display: block;
+  align-items: center;
+  background-color: black;
+  font-size: 1.5vw;
+  color: white;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+}
+
+header {
+  position: absolute;
+  top: 5%;
+  width: 100%;
+  text-align: center;
+  align-items: center;
+}
+
+header img {
+  width: 40%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 5%;
+  display: block;
+}
+
+#name {
+  width: 100%;
+  padding-top: 4%;
+  padding-bottom: 4%;
+  color: black;
+  font-size: 2vw;
+  font-weight: bold;
+  background-color: #CFB53B;
+}
+
+#controller {
+  position: absolute;
+  display: block;
+  top: 50%;
+  width: 100%;
+  transform: translateY(-50%);
+}
+
+ul {
+  list-style-type: none;
+  padding-left: 0px;
+}
+
+li {
+  display: inline;
+  margin-left: 2%;
+  margin-right: 2%;
+}
+
+.floorButton {
+  color: white;
+  border-radius: 25%;
+  border: 2px solid white;
+  font-size: 0.8vw;
+  text-align: center;
+  padding: 3% 4.5% 3% 4.5%;
+  vertical-align: middle;
+  transition: 0.2s;
+}
+
+.checkedFloor {
+  font-weight: bold;
+  color: #CFB53B;
+  border-color: #CFB53B;
+}
+
+.uncheckedFloor:hover {
+  font-weight: bold;
+  color: #CFB53B;
+  border-color: #CFB53B
+}
+
+input[type='text'] {
+  box-sizing: border-box;
+  width: 85%;
+  height: 5vh;
+  text-align: center;
+  font-size: 1vw;
+  border: 1px lightgray solid;
+}
+
+input[type='text']:focus {
+  background-color: #CFB53B;
+  color: white;
+}
+
+input[type='text']:focus::placeholder {
+  color: white;
+}
+
+button {
+  box-sizing: border-box;
+  width: 15%;
+  height: 5vh;
+  background-color: white;
+  text-align: center;
+  font-size: 1vw;
+  border: 1px lightgray solid;
+}
+
+button:hover {
+  background-color: #CFB53B;
+  color: white;
+}
+
+button:active {
+  background-color: #CFB53B;
+  color: black;
+}
+
+#floor, #finder, #router, #emergency {
+  width: 100%;
+  text-align: center;
+}
+
+footer {
+  position: absolute;
+  bottom: 5%;
+  width: 100%;
+  text-align: center;
+  align-items: center;
+}

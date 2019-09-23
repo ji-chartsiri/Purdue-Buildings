@@ -1,0 +1,60 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Building Mapper</title>
+    <link rel="stylesheet" href="generator.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
+</head>
+
+<body>
+    <div id="menuColumn">
+        <div id="dataIo">
+            <label for="file_input" id="custom_file_input">
+                Upload Map
+            </label>
+            <input type="file" id="file_input" accept="image/*"/>
+            <button type="button" id="download_button" onclick="downloadJson()">Export Map</button>
+        </div>
+        <div id="nodeInfo">
+            <h3>Current Node</h3>
+            <h4>ID:</h4>
+            <input type="text" id='node_id'>
+
+            <h4>LATITUDE:</h4>
+            <input type="text" id='node_lat'>
+
+            <h4>LONGITUDE:</h4>
+            <input type="text" id='node_lon'>
+
+            <h4>FLOOR:</h4>
+            <input type="text" id='node_floor'>
+            <button type="button" onclick="updateNodeInfo()" id="update_button">Update Info</button>
+
+            <h4>CHILDREN:</h4>
+            <div id='node_adj'></div>
+
+            <h4>PARENTS:</h4>
+            <div id="add_parent_div">
+                <input type="text" id='add_parent_input' placeholder="New Parent ID">
+                <button type="button" id = "add_parent_button" onclick="addParent()">+</button>
+            </div>
+            <div id="node_parent"></div>
+
+
+            <button type="button" id="delete_node_button" onclick="deleteNodeAndChildren()">Delete Node & Children</button>
+            
+        </div>
+    </div>
+    <div id="map"></div>
+
+    <script src="generator.js"></script>
+
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+    <script src="leaflet.hotline.js"></script>
+
+</body>
+
+</html>
