@@ -31,6 +31,7 @@
 
             <h4>FLOOR:</h4>
             <input type="text" id='node_floor'>
+            <button type="button" onclick="updateNodeInfo()" id="update_button">Update Info</button>
 
             <h4>CHILDREN:</h4>
             <div id='node_adj'></div>
@@ -42,7 +43,6 @@
             </div>
             <div id="node_parent"></div>
 
-            <button type="button" onclick="updateNodeInfo()" id="update_button">Update Info</button>
 
             <button type="button" id="delete_node_button" onclick="deleteNodeAndChildren()">Delete Node & Children</button>
             
