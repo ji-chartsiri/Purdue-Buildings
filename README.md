@@ -14,13 +14,12 @@ Input start and ending room number at bottom to find shortest path
 ![Sample Mapper View](images/mapper_sample_view.png)
 ---
 ### Basic Instructions
-<img align="right" src="images/io_buttons.png" alt="Sample Mapper View" width="260" height ="84">
+
+<img align="right" src="images/edit_io.png" alt="Edit and IO Group" width="254" height ="350">
 
 **UPLOAD** an image file (png, jpg, etc.) to start
 
 **CLICK EXPORT** to prompt a download for a JSON file containing the mapped nodes
-
-<img align="right" src="images/textbox_edit.png" alt="Edit Node Info Group" width="250" height="260">
 
 **RIGHT CLICK** to place new nodes
 
@@ -29,6 +28,7 @@ Input start and ending room number at bottom to find shortest path
 **HOLD LEFT CLICK** to drag node to new position
 
 **CLICK UPDATE INFO** to save any changes in the **TEXT BOXES**
+
 ---
 ### Loops
 Create a loop by adding a new parent to an existing node. It is strongly suggested to add a parent to the node **LOWER** in the tree. (This will prevent unexpected problems when deleting.)
@@ -39,6 +39,7 @@ Create a loop by adding a new parent to an existing node. It is strongly suggest
 Removing a node also removes **ALL** its children. Be careful when deleting any node and **ESPECIALLY** when deleting nodes in a loop. 
 
 Click through all of a node's children (and their children's children... etc) through the sidebar to check what you are deleting!
+
 ---
 ### Quality of Life
 
