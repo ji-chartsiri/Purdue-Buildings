@@ -13,8 +13,9 @@ Input start and ending room number at bottom to find shortest path
 ### Sample View
 ![Sample Mapper View](images/mapper_sample_view.png)
 ---
-### Basic Instructions
 <img align="right" src="images/edit_io.png" alt="Edit and IO Group" width="254" height ="350">
+
+### Basic Instructions
 
 **UPLOAD** an image file (png, jpg, etc.) to start
 
