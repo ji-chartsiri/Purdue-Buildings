@@ -13,9 +13,8 @@ Input start and ending room number at bottom to find shortest path
 ### Sample View
 ![Sample Mapper View](images/mapper_sample_view.png)
 ---
-<img align="right" src="images/edit_io.png" alt="Edit and IO Group" width="254" height ="350">
-
 ### Basic Instructions
+<img align="right" src="images/edit_io.png" alt="Edit and IO Group" width="254" height ="350">
 
 **UPLOAD** an image file (png, jpg, etc.) to start
 
@@ -30,10 +29,10 @@ Input start and ending room number at bottom to find shortest path
 **CLICK UPDATE INFO** to save any changes in the **TEXT BOXES**
 
 ---
-<img align="right" src="images/child_parent_delete.png" alt="Children Parent Delete Group" width="250" height="196">
-
 ### Loops
 Create a loop by adding a new parent to an existing node. It is strongly suggested to add a parent to the node **LOWER** in the tree. (This will prevent unexpected problems when deleting.)
+
+<img align="right" src="images/child_parent_delete.png" alt="Children Parent Delete Group" width="250" height="196">
 
 ### Deleting Nodes
 Removing a node also removes **ALL** its children. Be careful when deleting any node and **ESPECIALLY** when deleting nodes in a loop. 
