@@ -1,10 +1,11 @@
 /*
-TODO
-adding parentNodes with visual ui
-write tree to file
+FUTURE GOALS
+highlight all nodes to be deleted and use confirm dialog
 */
 
 /*
+Map Data Generator v1.0.0
+
 Holy father who art in heaven, forgive me for the sin I am about to commit
 To the poor individual who must understand this code, may you rest in peace
  - Kyle Zheng, 2019
@@ -25,7 +26,7 @@ var node_lon = document.getElementById("node_lon");
 var node_floor = document.getElementById("node_floor");
 var node_adj = document.getElementById("node_adj");
 var node_parent = document.getElementById("node_parent");
-
+var add_parent_input = document.getElementById("add_parent_input");
 //CIRCLES are keys, NODES are values
 var nodesMap = new Map();
 
@@ -38,14 +39,15 @@ var currentCircle;
 var circlesLayer;
 var linesLayer;
 
+const NODE_BUTTON_CLASS_NAME = 'nodeListButton'
 //Map layer colors
 const MAP_COLORS = {
     CIRCLE: 'orange',
     // LINE: 'orange',
     CURRENT_CIRCLE: 'red',
     HOVER_CIRCLE: 'yellow',
-    LINE_START:'navy',
-    LINE_END:'cyan',
+    LINE_START: 'navy',
+    LINE_END: 'cyan',
 }
 
 //Styling for circles (nodes)
@@ -57,10 +59,14 @@ const CIRCLE_OPTIONS = {
     bubblingMouseEvents: false,
 }
 
-//TODO put this in HTML file
+const ALERT_MESSAGES={
+    ID_DNE : "Please enter a valid node ID",
+    PARENT_ID : "This node is already a parent",
+    CHILD_ID :"This node's child cannot be its parent",
+    SELF_ID: "Node cannot be own parent"
+}
+
 fileInput.addEventListener('change', handleFileChange);
-document.getElementById("show_nodes").addEventListener("click", handleShowNodes)
-// document.getElementById("delete_node_button").addEventListener("click", deleteEverything());
 
 function handleFileChange() {
     const file = this.files[0];
@@ -85,9 +91,9 @@ function loadMap(file) {
         L.imageOverlay(imageUrl, imageBounds).addTo(map);
 
         //Centers image
-        map.setView([this.height/2, this.width/2],1);
+        map.setView([this.height / 2, this.width / 2], 1);
         //Adds equal bounds around image
-        map.setMaxBounds([[-this.height/2,-this.width/2],[this.height*1.5,this.width*1.5]]);
+        map.setMaxBounds([[-this.height / 2, -this.width / 2], [this.height * 1.5, this.width * 1.5]]);
     };
     //Compatability with old and new browsers
     if ('srcObject' in img) {
@@ -117,14 +123,14 @@ function loadMap(file) {
                     L.latLng(coord[0], coord[1], 1)
                 ]
                 //Hotline uses z-value in latLng to create gradient using palette
-                var line = L.hotline(coords, { palette: {0.0:MAP_COLORS.LINE_START,1.0:MAP_COLORS.LINE_END}, weight: 2 }).addTo(linesLayer);
-                
+                var line = L.hotline(coords, { palette: { 0.0: MAP_COLORS.LINE_START, 1.0: MAP_COLORS.LINE_END }, weight: 2 }).addTo(linesLayer);
+
                 currentNode.startLine.push(line);
             }
 
             //Reset color of previous node
             if (currentCircle != null) {
-                currentCircle.setStyle({ color: MAP_COLORS.CIRCLE, fillColor:MAP_COLORS.CIRCLE});
+                currentCircle.setStyle({ color: MAP_COLORS.CIRCLE, fillColor: MAP_COLORS.CIRCLE });
             }
 
             //Update current circle/node reference
@@ -165,8 +171,8 @@ function setUpCircleListeners() {
 
         mousedown: function (event) {
             var selection = event.layer;
-            
-            selection.setStyle({fillColor:MAP_COLORS.CURRENT_CIRCLE});
+
+            selection.setStyle({ fillColor: MAP_COLORS.CURRENT_CIRCLE });
 
             //Handles node selection
             if (currentCircle != null) {
@@ -200,7 +206,7 @@ function setUpCircleListeners() {
                 node.startLine.forEach(
                     function (line) {
                         var coordsArray = line.getLatLngs();
-                        var startCoords = L.latLng(node.lat, node.lon,0);
+                        var startCoords = L.latLng(node.lat, node.lon, 0);
                         var endCoords = coordsArray[1];
                         line.setLatLngs([startCoords, endCoords]);
                     }
@@ -223,9 +229,9 @@ function setUpCircleListeners() {
 //TODO - HOW DOES THIS WORK WITH LOOPS???????????????????????????????
 function deleteNodeAndChildren() {
     //Removes node from parent's adj array
-    currentNode.parentNodes.forEach(function(parent){
-        for(let i =0; i<parent.adj.length; i++){
-            if(parent.adj[i] == currentNode){
+    currentNode.parentNodes.forEach(function (parent) {
+        for (let i = 0; i < parent.adj.length; i++) {
+            if (parent.adj[i] == currentNode) {
                 parent.adj.splice(i, 1);
                 break;
             }
@@ -235,23 +241,23 @@ function deleteNodeAndChildren() {
     deleteNode(currentNode);
 
     //Selects parent node - defaults to first
-    if(currentNode.parentNodes.length>0){
+    if (currentNode.parentNodes.length > 0) {
         currentNode = currentNode.parentNodes[0];
         currentCircle = currentNode.circle;
-        currentCircle.setStyle({fillColor:MAP_COLORS.CURRENT_CIRCLE, color:MAP_COLORS.CURRENT_CIRCLE});
-    }else{
-        currentCircle=null;
-        currentNode=null;
+        currentCircle.setStyle({ fillColor: MAP_COLORS.CURRENT_CIRCLE, color: MAP_COLORS.CURRENT_CIRCLE });
+    } else {
+        currentCircle = null;
+        currentNode = null;
     }
 }
 //Recursively deletes node and all children
-function deleteNode(node){
+function deleteNode(node) {
     nodesMap.delete(node.circle);
     circlesLayer.removeLayer(node.circle);
-    node.endLine.forEach(function(line){
+    node.endLine.forEach(function (line) {
         linesLayer.removeLayer(line);
     });
-    node.adj.forEach(function(child){
+    node.adj.forEach(function (child) {
         deleteNode(child);
     })
 }
@@ -260,7 +266,7 @@ function deleteNode(node){
 function createChildNode(lat, lon, floor, adj, id, endLine) {
     if (currentNode == null) {
         floor = 0;
-    }else{
+    } else {
         floor = currentNode.floor;
     }
     if (id == null) {
@@ -276,6 +282,61 @@ function createChildNode(lat, lon, floor, adj, id, endLine) {
         currentNode.adj.push(newNode);
     }
     return newNode;
+}
+
+function addParent(){
+    let nodeId = add_parent_input.value;
+    var alertMessage=ALERT_MESSAGES.ID_DNE;
+    let validId = false;
+    //TODO make this not horrible
+    for(var node of nodesMap.values()){
+        if(node.id == nodeId){
+            if(node.id==currentNode.id){
+                alertMessage=ALERT_MESSAGES.SELF_ID;
+                validId=true;
+            }
+            for(var child of currentNode.adj){
+                if(child.id==nodeId){
+                    validId=true;
+                    alertMessage=ALERT_MESSAGES.CHILD_ID;
+                    break;
+                }
+            }
+            for(var parent of currentNode.parentNodes){
+                if(parent.id==nodeId){
+                    validId=true;
+                    alertMessage=ALERT_MESSAGES.PARENT_ID;
+                    break;
+                }
+            }
+            //validId serves double purpose, does not mean id is valid
+            //actually means doesn't fail any checks - see above
+            if(!validId){
+                node.adj.push(currentNode);
+                currentNode.parentNodes.push(node);
+                updateNodeInfoColumn(currentNode);
+                validId=true;
+
+                var coords = [
+                    [node.lat, node.lon, 0],
+                    [currentNode.lat, currentNode.lon, 1]
+                ];
+                var line = L.hotline(coords, { palette: { 0.0: MAP_COLORS.LINE_START, 1.0: MAP_COLORS.LINE_END }, weight: 2 }).addTo(linesLayer);
+
+                node.startLine.push(line);
+                currentNode.endLine.push(line);
+            }else{
+                validId=false;
+            }
+            break;
+        }
+    }
+
+    if(validId){
+        add_parent_input.value="";
+    }else{
+        alert(alertMessage);
+    }
 }
 
 function updateNodeInfo() {
@@ -298,7 +359,7 @@ function updateNodeInfo() {
         currentNode.startLine.forEach(
             function (line) {
                 var coordsArray = line.getLatLngs();
-                var startCoords = L.latLng(currentNode.lat, currentNode.lon);
+                var startCoords = L.latLng(currentNode.lat, currentNode.lon, 0);
                 var endCoords = coordsArray[1];
                 line.setLatLngs([startCoords, endCoords]);
             }
@@ -310,7 +371,7 @@ function updateNodeInfo() {
             function (line) {
                 var coordsArray = line.getLatLngs();
                 var startCoords = coordsArray[0];
-                var endCoords = L.latLng(currentNode.lat, currentNode.lon);
+                var endCoords = L.latLng(currentNode.lat, currentNode.lon, 1);
                 line.setLatLngs([startCoords, endCoords]);
             }
         );
@@ -322,12 +383,61 @@ function updateNodeInfoColumn(node) {
     node_lat.value = node.lat;
     node_lon.value = node.lon;
     node_floor.value = node.floor;
-    node_adj.innerHTML = node.adj;
-    node_parent.innerHTML = node.parentNodes;
+
+    //Gives button the same function as clicking their respective nodes
+    var buttonCallback = function (child, htmlElement) {
+        var button = document.createElement("button");
+        button.innerHTML = child.id;
+        button.className += NODE_BUTTON_CLASS_NAME;
+        htmlElement.appendChild(button);
+
+        button.addEventListener("mouseover", function () {
+            child.circle.setStyle({ color: MAP_COLORS.HOVER_CIRCLE });
+        });
+        button.addEventListener("mouseout", function () {
+            child.circle.setStyle({ color: MAP_COLORS.CIRCLE });
+        });
+        button.addEventListener("click", function () {
+            currentCircle.setStyle({ color: MAP_COLORS.CIRCLE, fillColor: MAP_COLORS.CIRCLE });
+
+            currentNode = child;
+            currentCircle = child.circle;
+
+            currentCircle.setStyle({ color: MAP_COLORS.CURRENT_CIRCLE, fillColor: MAP_COLORS.CURRENT_CIRCLE });
+            updateNodeInfoColumn(currentNode);
+        });
+    }
+
+    if(node.adj.length>0){
+        node_adj.innerHTML = "";
+        node.adj.forEach((child)=>buttonCallback(child, node_adj));
+    }else{
+        node_adj.innerHTML="No children";
+    }
+    if(node.parentNodes.length>0){
+        node_parent.innerHTML="";
+        node.parentNodes.forEach((child)=>buttonCallback(child, node_parent));
+    }else{
+        node_parent.innerHTML="No parents. This is the ROOT NODE.";
+    }
 }
 
-function handleShowNodes() {
-    nodesMap.forEach(node => node.getJson());
+function downloadJson() {
+    var text ="";
+    nodesMap.forEach(node => text+=node.getJson());
+
+    //I have no clue how this works, but this prompts the download popup
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', 'map.json');
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+    //aka don't ask Kyle how this works
 }
 
 class Node {
@@ -344,16 +454,17 @@ class Node {
     }
 
     toString() {
-        return '"' + this.id + '"';
+        return this.id;
     }
 
-    //TODO replace with write to file
     getJson() {
-        console.log("\t" + '"' + this.id + '"' + ": {")
-        console.log('\t"lat":' + this.lat + ',')
-        console.log('\t"lon": ' + this.lon + ',')
-        console.log('\t"floor": ' + this.floor + ',')
-        console.log('\t"adj": ' + this.adj)
-        console.log("}, ")
+        var json ="";
+        json+='"' + this.id + '"' + ": {\n";
+        json+='\t"lat":' + this.lat + ',\n';
+        json+='\t"lon": ' + this.lon + ',\n';
+        json+='\t"floor": ' + this.floor + ',\n';
+        json+='\t"adj": ' + this.adj+'\n';
+        json+="},\n";
+        return json;
     }
 }

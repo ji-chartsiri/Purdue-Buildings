@@ -1,12 +1,13 @@
 body{
     display: flex;
     flex-direction: row;
-    font-family: Verdana, Geneva, Tahoma, sans-serif
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 #menuColumn{
     float: left;
     width: 20%;
+    padding-right: 8px;
 }
 #map {
     height: 95vh;
@@ -38,8 +39,10 @@ button:hover{
     margin-top: 10%;
     margin-bottom: 10%;
     background-color: white; 
-    color: black; 
+    color: #f44336; 
     border: 2px solid #f44336;
+    margin-top: 32px;
+    margin-bottom: 4px;
 }
 
 #delete_node_button:hover{
@@ -71,8 +74,7 @@ input[type="text"]{
 #custom_file_input:hover{
     background-color: #2caad4;
 }
-
-#show_nodes{
+#download_button{
     margin: 8px 0%;
 }
 
@@ -83,9 +85,50 @@ input[type="text"]{
     padding: 4px;
 }
 
-h2{
-    margin-top: 0;
-}
 h3{
+    margin-top: 0;
     margin-bottom: 0;
+}
+h4{
+    margin-top: 16px;
+    margin-bottom: 0;
+}
+h5{
+    margin-top: 0;
+    font-weight: 100;
+}
+
+#update_button{
+    margin-top: 16px;
+}
+
+.nodeListButton{
+    color:black;
+    padding: 4px;
+    font-size: 12px;
+    width:100%;
+    background-color: #c7c7c7;
+    margin: 2px 0;
+}
+.nodeListButton:hover{
+    background-color:#fcffc4;
+}
+
+#add_parent_button{
+    flex:1;
+    padding: 0px;
+    background-color: #008CBA;
+    font-size: 14px;
+}
+#add_parent_button:hover{
+    background-color: #2caad4;
+}
+
+#add_parent_div{
+    display: flex;
+    align-items: stretch;
+}
+#add_parent_input{
+    flex: 4;
+    height: min-content;
 }
